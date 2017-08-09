@@ -1,0 +1,166 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<!--
+    Voter Visibility SMF Mod - Enhances polling to allow voters to be displayed for those needing to record the results of polls.
+    Copyright (C) 2012-2017  Ray Cardillo (Cardillo's Creations)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<id>raycardillo:votervisibility</id>
+	<version>2.2</version>
+
+	<file name="$languagedir/Modifications.english.php" error="skip">
+		<operation>
+			<search position="end" />
+	        <add><![CDATA[
+// Begin Poll Vote Visibility Display strings
+$txt['poll_vv_opt'] = 'Vote visibility';
+$txt['poll_vv_opt_ro'] = '(read-only)';
+$txt['poll_vv_opt_public'] = 'PUBLIC';
+$txt['poll_vv_opt_discreet'] = 'DISCREET';
+$txt['poll_vv_opt_private'] = 'PRIVATE';
+$txt['poll_vv_opt_public_txt'] = 'Allow everyone to see votes.';
+$txt['poll_vv_opt_discreet_txt'] = 'Only creator and admins can see votes.';
+$txt['poll_vv_opt_private_txt'] = 'Only forum admins can see votes.';
+$txt['poll_vv_vlog_empty'] = 'No votes have been found for this poll.';
+$txt['poll_vv_vlog_title'] = 'Vote Log';
+$txt['poll_vv_vlog_button'] = 'View Votes';
+$txt['poll_vv_vlog_for'] = 'Responses to %1$s poll:';
+$txt['poll_vv_vlog_th_tstamp'] = 'Timestamp';
+$txt['poll_vv_vlog_th_member'] = 'Member';
+$txt['poll_vv_vlog_th_choicenum'] = 'Choice';
+$txt['poll_vv_vlog_th_choicelbl'] = 'Choice Label';
+$txt['poll_vv_vlog_th_comment'] = 'Comment';
+$txt['poll_vv_vlog_err_discreet'] = 'Vote visibility is DISCREET and you are not the creator or a forum administrator!';
+$txt['poll_vv_vlog_err_private'] = 'Vote visibility is PRIVATE and you are not a forum administrator!';
+$txt['poll_vv_vlog_vote_warning'] = 'This is a %1$s poll; %2$s';
+$txt['poll_vv_vlog_guest_or_unknown'] = '(Guest or Removed Member)';
+$txt['poll_vv_shwcmt_opt'] = 'Allow vote comment';
+$txt['poll_vv_reqcmt_opt'] = 'Require comment for';
+$txt['poll_vv_reqcmt_warn'] = '(requires comment)';
+$txt['poll_vv_cmt_label'] = 'Comment';
+$txt['poll_vv_cmt_missing_required'] = 'A comment is required when voting for Option %1$d: &quot;%2$s&quot;.';
+// End Poll Vote Visibility Display strings
+]]></add>
+    	</operation>
+	</file>
+	<file name="$languagedir/Modifications.english-utf8.php" error="skip">
+		<operation>
+			<search position="end" />
+	        <add><![CDATA[
+// Begin Poll Vote Visibility Display strings
+$txt['poll_vv_opt'] = 'Vote visibility';
+$txt['poll_vv_opt_ro'] = '(read-only)';
+$txt['poll_vv_opt_public'] = 'PUBLIC';
+$txt['poll_vv_opt_discreet'] = 'DISCREET';
+$txt['poll_vv_opt_private'] = 'PRIVATE';
+$txt['poll_vv_opt_public_txt'] = 'Allow everyone to see votes.';
+$txt['poll_vv_opt_discreet_txt'] = 'Only creator and admins can see votes.';
+$txt['poll_vv_opt_private_txt'] = 'Only forum admins can see votes.';
+$txt['poll_vv_vlog_empty'] = 'No votes have been found for this poll.';
+$txt['poll_vv_vlog_title'] = 'Vote Log';
+$txt['poll_vv_vlog_button'] = 'View Votes';
+$txt['poll_vv_vlog_for'] = 'Responses to %1$s poll:';
+$txt['poll_vv_vlog_th_tstamp'] = 'Timestamp';
+$txt['poll_vv_vlog_th_member'] = 'Member';
+$txt['poll_vv_vlog_th_choicenum'] = 'Choice';
+$txt['poll_vv_vlog_th_choicelbl'] = 'Choice Label';
+$txt['poll_vv_vlog_th_comment'] = 'Comment';
+$txt['poll_vv_vlog_err_discreet'] = 'Vote visibility is DISCREET and you are not the creator or a forum administrator!';
+$txt['poll_vv_vlog_err_private'] = 'Vote visibility is PRIVATE and you are not a forum administrator!';
+$txt['poll_vv_vlog_vote_warning'] = 'This is a %1$s poll; %2$s';
+$txt['poll_vv_vlog_guest_or_unknown'] = '(Guest or Removed Member)';
+$txt['poll_vv_shwcmt_opt'] = 'Allow vote comment';
+$txt['poll_vv_reqcmt_opt'] = 'Require comment for';
+$txt['poll_vv_reqcmt_warn'] = '(requires comment)';
+$txt['poll_vv_cmt_label'] = 'Comment';
+$txt['poll_vv_cmt_missing_required'] = 'A comment is required when voting for Option %1$d: &quot;%2$s&quot;.';
+// End Poll Vote Visibility Display strings
+]]></add>
+    	</operation>
+	</file>
+	<file name="$languagedir/Modifications.german-utf8.php" error="skip">
+		<operation>
+			<search position="end" />
+	        <add><![CDATA[
+// Begin Poll Vote Visibility Display strings
+// German-UTF8 translation contributed by: Inti31
+$txt['poll_vv_opt'] = 'Abstimmungsergebnisse anzeigen';
+$txt['poll_vv_opt_ro'] = '(nur lesen)';
+$txt['poll_vv_opt_public'] = 'ÖFFENTLICH';
+$txt['poll_vv_opt_discreet'] = 'DISKRET';
+$txt['poll_vv_opt_private'] = 'PRIVAT';
+$txt['poll_vv_opt_public_txt'] = 'Jedem Benutzer ist es möglich die Abstimmungsergebnisse aufzurufen';
+$txt['poll_vv_opt_discreet_txt'] = 'Nur der Ersteller kann die Abstimmungsergebnisse aufrufen (Administratoren natürlich auch)';
+$txt['poll_vv_opt_private_txt'] = 'Nur Administratoren können die Abstimmungsergebnisse aufrufen';
+$txt['poll_vv_vlog_empty'] = 'Auf diese Umfrage wurde noch nicht abgestimmt.';
+$txt['poll_vv_vlog_title'] = 'Abstimmungslog';
+$txt['poll_vv_vlog_button'] = 'zeige Abstimmungen';
+$txt['poll_vv_vlog_for'] = 'Antworten auf %1$se Umfrage:';
+$txt['poll_vv_vlog_th_tstamp'] = 'Datumsstempel';
+$txt['poll_vv_vlog_th_member'] = 'Mitglied';
+$txt['poll_vv_vlog_th_choicenum'] = 'Auswahl';
+$txt['poll_vv_vlog_th_choicelbl'] = 'Auswahllabel';
+$txt['poll_vv_vlog_th_comment'] = 'Kommentar';
+$txt['poll_vv_vlog_err_discreet'] = 'Die Abstimmungsergebnisse sind nicht sichtbar, da die Umfrage im Status DISKRET läuft. Da Du nicht der Ersteller der Umfrage bist, hast Du nicht die Möglichkeit die Abstimmungsergebnisse zu sehen (oder Du benötigst Administratorrechte).';
+$txt['poll_vv_vlog_err_private'] = 'Die Abstimmungsergebnisse stehen nur den Administratoren zur Verfügung. Die Umfrage hat den Status PRIVAT.';
+$txt['poll_vv_vlog_vote_warning'] = 'Status der Umfrage: %1$s; %2$s';
+$txt['poll_vv_vlog_guest_or_unknown'] = '(Gast oder Ex-Mitglied)';
+$txt['poll_vv_shwcmt_opt'] = 'Erlaube Kommentare zu dieser Umfrage';
+$txt['poll_vv_reqcmt_opt'] = 'benötigt Kommentar für';
+$txt['poll_vv_reqcmt_warn'] = '(Kommentar erforderlich)';
+$txt['poll_vv_cmt_label'] = 'Kommentar';
+$txt['poll_vv_cmt_missing_required'] = 'Du musst einen Kommentar zur Auswahloption %1$d: &quot;%2$s&quot; schreiben.';
+// End Poll Vote Visibility Display strings
+]]></add>
+    	</operation>
+	</file>
+	<file name="$languagedir/Modifications.polish-utf8.php" error="skip">
+		<operation>
+			<search position="end" />
+	        <add><![CDATA[
+// Begin Poll Vote Visibility Display strings
+// Polish-UTF8 translation contributed by: Greybrow
+$txt['poll_vv_opt'] = 'Widoczność głosów';
+$txt['poll_vv_opt_ro'] = '(tylko do odczytu)';
+$txt['poll_vv_opt_public'] = 'WSZYSCY';
+$txt['poll_vv_opt_discreet'] = 'TWÓRCA';
+$txt['poll_vv_opt_private'] = 'ADMIN';
+$txt['poll_vv_opt_public_txt'] = 'Wszyscy mogą przeglądać głosy.';
+$txt['poll_vv_opt_discreet_txt'] = 'Tylko twórca i admini mogą przeglądać głosy.';
+$txt['poll_vv_opt_private_txt'] = 'Tylko admini mogą przeglądać głosy.';
+$txt['poll_vv_vlog_empty'] = 'Brak głosów w tej ankiecie.';
+$txt['poll_vv_vlog_title'] = 'Log głosowań';
+$txt['poll_vv_vlog_button'] = 'Przejrzyj głosy';
+$txt['poll_vv_vlog_for'] = 'Ankieta z widocznością: %1$s';
+$txt['poll_vv_vlog_th_tstamp'] = 'Czas';
+$txt['poll_vv_vlog_th_member'] = 'Użytkownik';
+$txt['poll_vv_vlog_th_choicenum'] = 'Wybór';
+$txt['poll_vv_vlog_th_choicelbl'] = 'Opis';
+$txt['poll_vv_vlog_th_comment'] = 'Komentarz';
+$txt['poll_vv_vlog_err_discreet'] = 'Tylko twórca i admini mogą przeglądać głosy!';
+$txt['poll_vv_vlog_err_private'] = 'Tylko admini mogą przeglądać głosy!';
+$txt['poll_vv_vlog_vote_warning'] = '%2$s';
+$txt['poll_vv_vlog_guest_or_unknown'] = '(użytkownik usunięty)';
+$txt['poll_vv_shwcmt_opt'] = 'Zezwól na komentarze do głosu';
+$txt['poll_vv_reqcmt_opt'] = 'Wymagaj komentarza do głosu';
+$txt['poll_vv_reqcmt_warn'] = '(wymaga komentarza)';
+$txt['poll_vv_cmt_label'] = 'Komentarz';
+$txt['poll_vv_cmt_missing_required'] = 'Przy wybraniu opcji %1$d: &quot;%2$s&quot;.';
+// End Poll Vote Visibility Display strings
+]]></add>
+    	</operation>
+	</file>	
+</modification>

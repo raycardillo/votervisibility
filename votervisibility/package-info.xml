@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<!--
+    Voter Visibility SMF Mod - Enhances polling to allow voters to be displayed for those needing to record the results of polls.
+    Copyright (C) 2012-2017  Ray Cardillo (Cardillo's Creations)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<name>Voter Visibility</name>
+	<id>raycardillo:votervisibility</id>
+	<version>2.2</version>
+	<type>modification</type>
+	<homepage>https://www.CardillosCreations.com</homepage>
+	
+	<install for="2.0.2 - 2.0.8">
+		<readme type="file" parsebbc="true" lang="english">readme.txt</readme>
+		<database type="file">database.php</database>		
+		<require-dir name="Sources" destination="$boarddir" />
+		<require-dir name="Themes" destination="$boarddir" />
+		<modification format="xml" type="file">mods-common.xml</modification>
+		<modification format="xml" type="file">mods-2.0.2.xml</modification>
+		<modification format="xml" type="file">mods-translations.xml</modification>
+	</install>
+	
+	<uninstall for="2.0.2 - 2.0.8">
+		<modification format="xml" type="file" reverse="true">mods-common.xml</modification>
+		<modification format="xml" type="file" reverse="true">mods-2.0.2.xml</modification>
+		<modification format="xml" type="file" reverse="true">mods-translations.xml</modification>
+		<remove-file name="$sourcedir/VoteLog.php" />
+		<remove-file name="$themedir/VoteLog.template.php" />
+		<remove-file name="$themedir/css/votelog.css" />
+		<remove-file name="$themedir/scripts/jquery-1.11.3.min.js" />
+		<remove-file name="$themedir/scripts/jquery-tablesorter-2.0.5.min.js" />
+		<remove-dir name="$themedir/images/votelog" />
+	</uninstall>	
+	
+	<install for="2.0.9 - 2.0.99">
+		<readme type="file" parsebbc="true" lang="english">readme.txt</readme>
+		<database type="file">database.php</database>		
+		<require-dir name="Sources" destination="$boarddir" />
+		<require-dir name="Themes" destination="$boarddir" />
+		<modification format="xml" type="file">mods-common.xml</modification>
+		<modification format="xml" type="file">mods-2.0.9.xml</modification>
+		<modification format="xml" type="file">mods-translations.xml</modification>
+	</install>
+	
+	<uninstall for="2.0.9 - 2.0.99">
+		<modification format="xml" type="file" reverse="true">mods-common.xml</modification>
+		<modification format="xml" type="file" reverse="true">mods-2.0.9.xml</modification>
+		<modification format="xml" type="file" reverse="true">mods-translations.xml</modification>
+		<remove-file name="$sourcedir/VoteLog.php" />
+		<remove-file name="$themedir/VoteLog.template.php" />
+		<remove-file name="$themedir/css/votelog.css" />
+		<remove-file name="$themedir/scripts/jquery-1.11.3.min.js" />
+		<remove-file name="$themedir/scripts/jquery-tablesorter-2.0.5.min.js" />
+		<remove-dir name="$themedir/images/votelog" />
+	</uninstall>	
+
+</package-info>

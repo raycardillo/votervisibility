@@ -1,0 +1,505 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<!--
+    Voter Visibility SMF Mod - Enhances polling to allow voters to be displayed for those needing to record the results of polls.
+    Copyright (C) 2012-2017  Ray Cardillo (Cardillo's Creations)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+  -- Modifications that should apply commonly in all cases.
+  --
+  -- NOTE:	I don't like the way I had to do all the searching... but it's the best I could do given the following
+  --		limitations by the SMF modification packaging system.  The main problem is related to the fact that I
+  --		need to add some code that is a near copy-n-paste of a fairly decent code block.  So there's a lot that
+  --		other mods can change on my that would break my search patterns.  However, I could not use any other
+  --		techniques because of the following limitations:
+  --
+  --		Tried to use regexp="true" for advanced searching but...
+  --			1.  does not support multi-line search patterns (e.g., ^\n\t+SELECT.*\n\t+FROM something\n$).
+  --			2.  does not use "preg_match_all" so multiple matches are not processed (only first match works).
+  --			3.  uninstall "reverse" does not work auto-magically with regexp="true" so that sucks.
+  --
+  --		Tried to use normal search patterns but some of the code looks too "common"...
+  --			1.  Look at the "poll_choices" SELECT statements and supporting operations.
+  --			2.  Some of the statements are in fairly large blocks that are hard to distinguish from one another.
+  --			3.  Only solution was to include larger and larger blocks to get to the unique portions.
+  -->
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+    <id>raycardillo:votervisibility</id>
+	<version>2.2</version>
+
+	<file name="$boarddir/index.php">
+		<!-- Add the VoteLog action to the list of known actions. -->
+		<operation>
+			<search position="before"><![CDATA[
+		'vote' => array('Poll.php', 'Vote'),]]></search>
+			<add><![CDATA[
+		'votelog' => array('VoteLog.php', 'VoteLog'),]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/css/index.css">
+		<operation>
+			<!-- Add the VoteLog action to the list of known actions. -->
+			<search position="before"><![CDATA[
+.middletext
+{]]></search>
+			<add><![CDATA[
+	word-wrap: break-word;]]></add>
+		</operation>
+		<operation>
+			<!-- extra space is needed for visual separation and to eliminate <dd> overflow scrolling -->
+			<search position="before"><![CDATA[
+#edit_poll dl.poll_options dd
+{]]></search>
+			<add><![CDATA[
+	padding: 0 0 .25em 0;]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Display.php">
+		<operation>
+			<search position="before"><![CDATA[
+				p.question, p.voting_locked, p.hide_results, p.expire_time, p.max_votes, p.change_vote,]]></search>
+			<add><![CDATA[
+				p.vote_visibility, p.allow_comments,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			SELECT pc.id_choice, pc.label, pc.votes, IFNULL(lp.id_choice, -1) AS voted_this]]></search>
+			<add><![CDATA[, pc.requires_comment]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$context['allow_edit_poll'] = $context['poll']['edit'];]]></search>
+			<add><![CDATA[
+
+		// add the comments indicator to the poll info context
+		$context['allow_comments'] = ($pollinfo['allow_comments'] == 1);
+		$context['requires_comments'] = false;
+		
+		// we need to be able to easily lookup which label and description to display when warning the user about visibility
+		$vvisTxt = array(
+			array('label' => 'poll_vv_opt_private', 'desc' => 'poll_vv_opt_private_txt'),
+			array('label' => 'poll_vv_opt_discreet', 'desc' => 'poll_vv_opt_discreet_txt'),
+			array('label' => 'poll_vv_opt_public', 'desc' => 'poll_vv_opt_public_txt')
+		);
+		
+		// append a visibility warning to the warning string
+		$context['poll']['allowed_warning'] .= '  '.sprintf($txt['poll_vv_vlog_vote_warning'], $txt[$vvisTxt[$pollinfo['vote_visibility']]['label']], $txt[$vvisTxt[$pollinfo['vote_visibility']]['desc']]);]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			$barWide = $bar == 0 ? 1 : floor(($bar * 8) / 3);]]></search>
+			<add><![CDATA[
+			// determine if any options require comments
+			$context['requires_comments'] |= ($option['requires_comment'] == 1);]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				'option' => parse_bbc($option['label']),]]></search>
+			<add><![CDATA[
+				'requires_comment' => $option['requires_comment'],]]></add>
+		</operation>
+	</file>	
+
+	<file name="$themedir/Display.template.php">
+		<operation>
+			<search position="before" whitespace="loose"><![CDATA[
+								<li class="middletext">', $option['vote_button'], ' <label for="', $option['id'], '">', $option['option'], '</label>]]></search>
+			<add><![CDATA[', (isset($option['requires_comment'])&&$option['requires_comment']==1)?(' &nbsp; <em>'.$txt['poll_vv_reqcmt_warn'].'</em>'):'',']]></add>
+		</operation>
+		<operation>
+			<search position="after" whitespace="loose"><![CDATA[
+							<div class="submitbutton]]></search>
+			<add><![CDATA[';
+			
+			if ($context['allow_comments'] || $context['requires_comments'])
+			{
+				echo '
+							<div style="clear:both; padding: 1em 0 1em 2em; margin: 1em 0 1em 0;">
+								<label for="voteComment">', $txt['poll_vv_cmt_label'], ':</label>
+								<input type="text" name="voteComment" id="voteComment" class="input_text" size="80" maxlength="255" />
+							</div>';
+			}
+			
+			echo ']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			'results' => array('test' => 'show_view_results_button', 'text' => 'poll_results', 'image' => 'poll_results.gif', 'lang' => true, 'url' => $scripturl . '?topic=' . $context['current_topic'] . '.' . $context['start'] . ';viewresults'),]]></search>
+			<add><![CDATA[
+			'votelog' => array('test' => 'show_view_votelog_button', 'text' => 'poll_vv_vlog_button', 'image' => 'poll_votelog.gif', 'lang' => true, 'url' => $scripturl . '?action=votelog;topic=' . $context['current_topic']),]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Post.php">
+		<operation>
+			<search position="before"><![CDATA[
+function Post()
+{]]></search>
+			<add><![CDATA[
+	global $reqcmts;]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			'hide' => empty($_POST['poll_hide']) ? 0 : $_POST['poll_hide'],]]></search>
+			<add><![CDATA[
+			'vvis' => empty($_POST['poll_vvis']) ? 2 : $_POST['poll_vvis'],
+			'vcmt' => empty($_POST['poll_vcmt']) ? 0 : $_POST['poll_vcmt'],]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+		$_POST['poll_expire'] = (int) $_POST['poll_expire'];]]></search>
+			<add><![CDATA[
+		$_POST['poll_vvis'] = isset($_POST['poll_vvis']) ? ((int) $_POST['poll_vvis']) : 0;
+		$_POST['poll_vcmt'] = isset($_POST['poll_vcmt']) ? ((int) $_POST['poll_vcmt']) : 0;
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				'poster_name' => 'string-255', 'change_vote' => 'int', 'guest_vote' => 'int']]></search>
+			<add><![CDATA[, 'vote_visibility' => 'int', 'allow_comments' => 'int']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				$_POST['guestname'], $_POST['poll_change_vote'], $_POST['poll_guest_vote'],]]></search>
+			<add><![CDATA[ $_POST['poll_vvis'], $_POST['poll_vcmt']]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			$pollOptions[] = array($id_poll, $i, $option]]></search>
+			<add><![CDATA[, isset($_POST['reqcmts'][$i])?1:0]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			array('id_poll' => 'int', 'id_choice' => 'int', 'label' => 'string-255']]></search>
+			<add><![CDATA[, 'requires_comment' => 'int']]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Post.template.php">
+		<operation>
+			<search position="after"><![CDATA[
+			function pollOptions()
+			{]]></search>
+			<add><![CDATA[
+			function allowCommentsChanged(checkbox)
+			{
+				if (checkbox.checked == false)
+				{
+					for (var i = 0; i < document.forms.postmodify.elements.length; i++)
+						if (document.forms.postmodify.elements[i].id.substr(0, 8) == "reqcmts-")
+							document.forms.postmodify.elements[i].checked = false;
+				}
+			}
+			
+			function requiredCommentsChanged(checkbox)
+			{
+				if (checkbox.checked == true)
+				{
+					document.forms.postmodify.poll_vcmt.checked = true;
+				}
+			}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<li id="pollMoreOptions"></li>'), ');]]></search>
+			<add><![CDATA[
+				setOuterHTML(document.getElementById("pollMoreReqCmts"), \'<label><input type="checkbox" value="1" name="reqcmts[\' + pollOptionNum + \']" id="reqcmts-\' + pollOptionNum + \'" onClick="requiredCommentsChanged(this)" class="input_check" />', $txt['option'], ' \' + pollOptionNum + \'</label><br /><span id="pollMoreReqCmts"></span>\');]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+							</dl>
+						</fieldset>
+					</div>';
+]]></search>
+			<add><![CDATA[
+								<dt>
+									', $txt['poll_vv_opt'], ':
+								</dt>
+								<dd>
+									<input title="', $txt['poll_vv_opt_private'], '" type="radio" name="poll_vvis" id="poll_vv_opt_private" value="0"', $context['poll_options']['vvis'] == 0 ? ' checked="checked"' : '', ' class="input_radio" /> <label for="poll_vv_opt_private">', $txt['poll_vv_opt_private_txt'], '</label><br />
+									<input title="', $txt['poll_vv_opt_discreet'], '" type="radio" name="poll_vvis" id="poll_vv_opt_discreet" value="1"', $context['poll_options']['vvis'] == 1 ? ' checked="checked"' : '', !empty($context['user']['is_guest']) ? 'disabled="disabled"' : '', ' class="input_radio" /> <label for="poll_vv_opt_discreet">', $txt['poll_vv_opt_discreet_txt'], '</label><br />
+									<input title="', $txt['poll_vv_opt_public'], '" type="radio" name="poll_vvis" id="poll_vv_opt_public" value="2"', $context['poll_options']['vvis'] == 2 ? ' checked="checked"' : '', ' class="input_radio" /> <label for="poll_vv_opt_public">', $txt['poll_vv_opt_public_txt'], '</label>
+								</dd>								
+								<dt>
+									<label for="poll_vcmt">', $txt['poll_vv_shwcmt_opt'], ':</label>
+								</dt>
+								<dd>
+									<input type="checkbox" value="1" name="poll_vcmt" id="poll_vcmt" onClick="allowCommentsChanged(this)"', $context['poll_options']['vcmt']?' checked="checked"':'', ' class="input_check" />
+								</dd>
+								<dt>
+									', $txt['poll_vv_reqcmt_opt'], ':
+								</dt>
+								<dd>';
+
+		foreach ($context['choices'] as $choice)
+		{
+		echo '
+									<label><input type="checkbox" value="1" name="reqcmts[', $choice['id'], ']" id="reqcmts-', $choice['id'], '" onClick="requiredCommentsChanged(this)"', (isset($choice['requires_comment'])&&$choice['requires_comment']==1)?' checked="checked"':'', ' class="input_check" />', $txt['option'], ' ', $choice['number'], '</label><br />';
+		}
+
+		echo '
+									<span id="pollMoreReqCmts"></span>
+								</dd>
+]]></add>
+		</operation>
+	</file>
+
+	<file name="$sourcedir/Poll.php">
+		<operation>
+			<search position="before"><![CDATA[
+	if (count($_REQUEST['options']) > $row['max_votes'])
+		fatal_lang_error('poll_too_many_votes', false, array($row['max_votes']));
+]]></search>
+			<add><![CDATA[
+	// trim and prepare the comment for the database
+	$voteComment = '';
+	if (isset($_REQUEST['voteComment'])) {
+		$voteComment = trim($_REQUEST['voteComment']);
+		$voteComment = censorText($voteComment);
+		$voteComment = $smcFunc['htmlspecialchars']($voteComment);
+		$voteComment = $smcFunc['truncate']($voteComment, 255);
+	}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$inserts[] = array($row['id_poll'], $user_info['id'], $id]]></search>
+			<add><![CDATA[, time(), $voteComment]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+	// Add their vote to the tally.
+	$smcFunc['db_insert']('insert',]]></search>
+			<add><![CDATA[
+	// we need to verify that a comment is present if a choice being selected requires comments
+	if (empty($voteComment))
+	{
+		$request = $smcFunc['db_query']('', '
+			SELECT id_choice, label, requires_comment
+			FROM {db_prefix}poll_choices
+			WHERE id_poll = {int:id_poll} AND id_choice IN ({array_int:poll_options})',
+			array( 'id_poll' => $row['id_poll'], 'poll_options' => $pollOptions )
+		);	
+		while ($choice = $smcFunc['db_fetch_assoc']($request))
+		{
+			if ($choice['requires_comment'] == 1)
+				fatal_lang_error('poll_vv_cmt_missing_required', false, array(1+$choice['id_choice'], $choice['label']));
+		}	
+		$smcFunc['db_free_result']($request);
+	}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		array('id_poll' => 'int', 'id_member' => 'int', 'id_choice' => 'int']]></search>
+			<add><![CDATA[, 'timestamp' => 'int', 'comments' => 'string-255']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+function EditPoll()
+{]]></search>
+			<add><![CDATA[
+	global $settings;]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		SELECT
+			t.id_member_started, p.id_poll, p.question, p.hide_results, p.expire_time, p.max_votes, p.change_vote,]]></search>
+			<add><![CDATA[
+			p.vote_visibility, p.allow_comments,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			'hide_results' => empty($_POST['poll_hide']) ? 0 : $_POST['poll_hide'],]]></search>
+			<add><![CDATA[
+			'vvis' => empty($_POST['poll_vvis']) ? 2 : $_POST['poll_vvis'],
+			'vcmt' => empty($_POST['poll_vcmt']) ? 0 : $_POST['poll_vcmt'],]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		$last_id = 0;
+
+		// Get all the choices - if this is an edit.
+		if ($context['is_edit'])
+		{
+			$request = $smcFunc['db_query']('', '
+				SELECT label, votes, id_choice]]></search>
+			<add><![CDATA[, requires_comment]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+		// Poll expiration time?
+		$context['poll']['expiration'] = empty($pollinfo['expire_time']) || !allowedTo('moderate_board') ? '' : ceil($pollinfo['expire_time'] <= time() ? -1 : ($pollinfo['expire_time'] - time()) / (3600 * 24));
+
+		// Get all the choices - if this is an edit.
+		if ($context['is_edit'])
+		{
+			$request = $smcFunc['db_query']('', '
+				SELECT label, votes, id_choice]]></search>
+			<add><![CDATA[, requires_comment]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+			'hide_results' => $pollinfo['hide_results'],]]></search>
+			<add><![CDATA[
+			'vvis' => $pollinfo['vote_visibility'],
+			'vcmt' => $pollinfo['allow_comments'],]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				// Add the choice!
+				$context['choices'][$row['id_choice']] = array(]]></search>
+			<add><![CDATA[
+					'requires_comment' => $row['requires_comment'],]]></add>
+		</operation>		
+		<operation>
+			<search position="before"><![CDATA[
+
+				$context['choices'][$row['id_choice']] = array(]]></search>
+			<add><![CDATA[
+					'requires_comment' => $row['requires_comment'],]]></add>
+		</operation>		
+		<operation>
+			<search position="before"><![CDATA[
+				'hide_results' => 0,]]></search>
+			<add><![CDATA[
+				'vvis' => 2,
+				'vcmt' => 0,]]></add>
+		</operation>		
+		<operation>
+			<search position="before"><![CDATA[
+	$_POST['poll_hide'] = (int) $_POST['poll_hide'];]]></search>
+			<add><![CDATA[
+	$_POST['poll_vvis'] = isset($_POST['poll_vvis']) ? (int) $_POST['poll_vvis'] : 0;
+	$_POST['poll_vcmt'] = isset($_POST['poll_vcmt']) ? (int) $_POST['poll_vcmt'] : 0;]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+				guest_vote = {int:guest_vote}' : ']]></search>
+			<add><![CDATA[
+				allow_comments = {int:allow_comments},]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+				'guest_vote' => $_POST['poll_guest_vote'],]]></search>
+			<add><![CDATA[
+				'allow_comments' => !empty($_POST['poll_vcmt']) ? $_POST['poll_vcmt'] : 0,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				'poster_name' => 'string-255', 'change_vote' => 'int', 'guest_vote' => 'int']]></search>
+			<add><![CDATA[,
+				'vote_visibility' => 'int', 'allow_comments' => 'int']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				$user_info['username'], $_POST['poll_change_vote'], $_POST['poll_guest_vote'],]]></search>
+			<add><![CDATA[
+				$_POST['poll_vvis'], $_POST['poll_vcmt']]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+				UPDATE {db_prefix}poll_choices
+				SET label = {string:option_name}]]></search>
+			<add><![CDATA[, requires_comment = {int:requires_comment}]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[
+					'option_name' => $option,]]></search>
+			<add><![CDATA[
+					'requires_comment' => isset($_POST['reqcmts'][$k]) ? 1 : 0]]></add>
+		</operation>
+	</file>
+
+	<file name="$themedir/Poll.template.php">
+		<operation>
+			<search position="after"><![CDATA[
+			var pollOptionNum = 0;]]></search>
+			<add><![CDATA[
+			function allowCommentsChanged(checkbox)
+			{
+				if (checkbox.checked == false)
+				{
+					for (var i = 0; i < document.forms.postmodify.elements.length; i++)
+						if (document.forms.postmodify.elements[i].id.substr(0, 8) == "reqcmts-")
+							document.forms.postmodify.elements[i].checked = false;
+				}
+			}
+			
+			function requiredCommentsChanged(checkbox)
+			{
+				if (checkbox.checked == true)
+				{
+					document.forms.postmodify.poll_vcmt.checked = true;
+				}
+			}
+]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<li id="pollMoreOptions"></li\');]]></search>
+			<add><![CDATA[
+				setOuterHTML(document.getElementById("pollMoreReqCmts"), \'<label><input type="checkbox" value="1" name="reqcmts[\' + (pollOptionNum - 1) + \']" id="reqcmts-\' + (pollOptionNum - 1) + \'" onClick="requiredCommentsChanged(this)" class="input_check" />', $txt['option'], ' \' + pollOptionNum + \'</label><br /><span id="pollMoreReqCmts"></span>\');]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[
+						</dl>
+					</fieldset>';
+]]></search>
+			<add><![CDATA[
+							<dt>
+								', $txt['poll_vv_opt'], ':<br />';
+	
+	$readonly = false;
+	if ($context['is_edit']) {
+		$readonly = true;
+		echo '
+								<em class="smalltext">', $txt['poll_vv_opt_ro'], '</em>';
+	}
+	
+	echo '
+							</dt>
+							<dd>
+								<input ', $readonly?'disabled="disabled" ':'', 'title="', $txt['poll_vv_opt_private'], '" type="radio" name="poll_vvis" id="poll_vv_opt_private" value="0"', $context['poll']['vvis'] == 0 ? ' checked="checked"' : '', ' class="input_radio" /> <label for="poll_vv_opt_private">', $txt['poll_vv_opt_private_txt'], '</label><br />
+								<input ', $readonly?'disabled="disabled" ':'', 'title="', $txt['poll_vv_opt_discreet'], '" type="radio" name="poll_vvis" id="poll_vv_opt_discreet" value="1"', $context['poll']['vvis'] == 1 ? ' checked="checked"' : '', !empty($context['user']['is_guest']) ? 'disabled="disabled"' : '', ' class="input_radio" /> <label for="poll_vv_opt_discreet">', $txt['poll_vv_opt_discreet_txt'], '</label><br />
+								<input ', $readonly?'disabled="disabled" ':'', 'title="', $txt['poll_vv_opt_public'], '" type="radio" name="poll_vvis" id="poll_vv_opt_public" value="2"', $context['poll']['vvis'] == 2 ? ' checked="checked"' : '', ' class="input_radio" /> <label for="poll_vv_opt_public">', $txt['poll_vv_opt_public_txt'], '</label>
+							</dd>
+							<dt>
+								<label for="poll_vcmt">', $txt['poll_vv_shwcmt_opt'], ':</label>
+							</dt>
+							<dd>
+								<input type="checkbox" value="1" name="poll_vcmt" id="poll_vcmt" onClick="allowCommentsChanged(this)"', $context['poll']['vcmt']?' checked="checked"':'', ' class="input_check" />
+							</dd>
+							<dt>
+								', $txt['poll_vv_reqcmt_opt'], ':
+							</dt>
+							<dd>';
+
+	foreach ($context['choices'] as $choice)
+	{
+		echo '
+								<label><input type="checkbox" value="1" name="reqcmts[', $choice['id'], ']" id="reqcmts-', $choice['id'], '" onClick="requiredCommentsChanged(this)"', (isset($choice['requires_comment'])&&$choice['requires_comment']==1)?' checked="checked"':'', ' class="input_check" />', $txt['option'], ' ', $choice['number'], '</label><br />';
+	}
+
+		echo '
+								<span id="pollMoreReqCmts"></span>
+							</dd>
+]]></add>
+		</operation>
+	</file>
+
+</modification>
