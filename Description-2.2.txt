@@ -1,0 +1,57 @@
+﻿[color=#c63][size=12pt][b][u]Overview[/u][/b][/size][/color]
+
+This is a modification for Simple Machines Forum (SMF) that enhances polling to allow voters to be displayed for those needing to organize and record the results of polls.  For example, when organizing a group event, friends are often curious about how other friends voted.  Likewise, the secretary of an organization might need to be able to record the results of certain polls (who voted for what).  In addition, some polls might want to allow (or require) comments for certain responses.  With this modification, each poll can be configured to allow various levels of [i]voter visibility[/i] and [i]comment requirements[/i], and then the [i]voter log[/i] can be viewed by those who are allowed to see them based on the configured voter visibility.
+
+[b]This mod has been well received and well tested in several very active forums.[/b]  Anyone who needs these features cannot imagine life without it.  While I'm not actively supporting it any longer, if you get my attention, I can try to help.
+
+
+[color=#c63][size=11pt][b][u]Main Features[/u][/b][/size][/color][list]
+[li]Voter Visibility and Comment Requirements can be specified when creating a new poll.[/li]
+[li]Voter Visibility can be set to:[list]
+[li][b]PUBLIC[/b] - Everyone can see the voter log for the poll.[/li]
+[li][b]DISCREET[/b] - Only the creator and admins can see the voter log for the poll.[/li]
+[li][b]PRIVATE[/b] - Only admins can see the voter log for the poll.[/li]
+[/list][/li]
+[li]Comments can be optional or required depending upon the vote choice or option selected.[/li]
+[/list]
+
+
+[color=#c63][size=11pt][b][u]Other Notes[/u][/b][/size][/color][list]
+[li]This mod is most likely [b]not compatible with other mods[/b] that significantly change poll behavior (e.g., multiple polls mods).[/li]
+[li][b]Visibility cannot be changed once the poll is created[/b] because that is too sensitive an operation.  Members may vote differently if they know their vote will be PUBLIC versus PRIVATE and changing visibility without their consent would be a violation of the trust communicated when they first voted.[/li]
+[li]Guests that are allowed to post polls cannot specify DISCREET voter visibility because there is no originating account associated with the poll.[/li]
+[li]When comments are available, there is only one comment block available for the vote because that is sufficient most users.[/li]
+[li]The Vote Log results table is a javascript sortable table created by Christian Bach and known as [url=http://tablesorter.com/]tablesorter 2.0[/url].[/li]
+[/list]
+
+
+[color=#c63][size=11pt][b][u]Release Notes[/u][/b][/size][/color][list]
+[li][b]1.00[/b] - The initial release candidate.[/li]
+[li][b]1.01[/b] - Small bug fixes discovered during the mod approval process.
+[list][li]Addressed feedback provided by the mod approval team.[/li]
+[li]Fixed a bug relating to guest voting features.[/li]
+[/list][/li]
+[li][b]1.02[/b] - Bugs fixes for issues reported by users in the support forum.
+[list][li]Fixed errors being reported relating to polls that do not allow comments.[/li]
+[li]Fixed add polls so that the visibility can be set when adding a poll to an existing topic.[/li]
+[li]Upgraded tablesorter and jQuery to latest stable releases.[/li]
+[/list][/li]
+[li][b]2.0[/b] - Redefining version labeling scheme so package manager can see the updates.[/li]
+[li][b]2.1[/b] - Updated to be compatible with latest SMF and other minor updates.
+[list][li]Added support for 2.0.9-2.0.11 (only verified against 2.0.11).[/li]
+[li]Updated jQuery library to latest stable release.[/li]
+[li]Corrected visibility label from "DISCRETE" to "DISCREET".[/li]
+[li]Changed default visibility level to PUBLIC based on user feedback.[/li]
+[li][b]2.2[/b] - Released as open source and published on GitHub.
+[/list][/li]
+
+[/list]
+
+
+[color=#c63][size=11pt][b][u]License agreement[/u][/b][/size][/color]
+[list]
+[li]This modification was created by [b]Ray Cardillo[/b] of [url=https://CardillosCreations.com]Cardillo's Creations LLC[/url][/li]
+[li]By using this software, you agree to be bound by the license agreement.[/li]
+[li]A copy of the license is included in the [b]license.txt[/b] file at the root of the installation package.[/li]
+[li]Simple Machines[sup]®[/sup] is authorized to distribute this modification on SimpleMachines.org and any other medium.[/li]
+[/list]
