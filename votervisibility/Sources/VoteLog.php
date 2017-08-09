@@ -1,5 +1,5 @@
 <?php
-/**
+/*
     Voter Visibility SMF Mod - Enhances polling to allow voters to be displayed for those needing to record the results of polls.
     Copyright (C) 2012-2017  Ray Cardillo (Cardillo's Creations)
 
